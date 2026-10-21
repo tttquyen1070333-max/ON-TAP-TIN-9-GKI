@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đấu Trường Tin Học 9 - Ôn Tập Giữa Kì 1</title>
+    <!-- Tailwind CSS with CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
+    <style>
+        /* Modern Bright Light Theme Design */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, Roboto, sans-serif;
+            background: #f1f5f9;
+            background-image: radial-gradient(at 100% 0%, #e0e7ff 0px, transparent 50%), radial-gradient(at 0% 100%, #fbcfe8 0px, transparent 50%);
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: #0f172a;
+            padding: 16px;
+        }
+        .app-container { max-width: 960px; margin: 0 auto; }
+        
+        .light-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+            transition: all 0.2s ease;
+        }
+        .light-card:hover {
+            box-shadow: 0 12px 25px -5px rgba(0, 0, 0, 0.08);
+        }
+
+        .nav-btn {
+            background: #f8fafc;
+            color: #475569;
+            border: 2px solid #e2e8f0;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin: 4px;
+        }
+        .nav-btn:hover {
+            background: #e0e7ff;
+            color: #4338ca;
+            border-color: #c7d2fe;
+        }
+        .nav-btn.active {
+            background: #4f46e5;
+            color: #ffffff;
+            border-color: #4f46e5;
+            box-shadow: 0 4px 14px rgba(79, 70, 229, 0.35);
+        }
+
+        /* MCQ Options Styling */
+        .opt-btn {
+            width: 100%;
+            text-align: left;
+            padding: 16px;
+            border-radius: 12px;
+            border: 2px solid #e2e8f0;
+            background: #f8fafc;
+            color: #1e293b;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s ease;
+        }
+        .opt-btn:hover:not(:disabled) {
+            background: #eef2ff;
+            border-color: #6366f1;
+            transform: translateY(-2px);
+        }
+        .opt-btn.correct {
+            background: #dcfce7 !important;
+            border-color: #22c55e !important;
+            color: #14532d !important;
+        }
+        .opt-btn.wrong {
+            background: #ffe4e6 !important;
+            border-color: #f43f5e !important;
+            color: #881337 !important;
+        }
+
+        /* True/False Styling */
+        .tf-btn {
+            padding: 10px 22px;
+            border-radius: 10px;
+            border: 2px solid #cbd5e1;
+            background: #f1f5f9;
+            color: #334155;
+            font-weight: 800;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .tf-btn:hover:not(:disabled) { background: #e2e8f0; border-color: #94a3b8; }
+        .tf-btn:disabled { opacity: 0.85; cursor: not-allowed; }
+        .tf-btn.correct-choice { background: #16a34a !important; color: #ffffff !important; border-color: #15803d !important; box-shadow: 0 4px 10px rgba(22, 163, 74, 0.3); }
+        .tf-btn.wrong-choice { background: #dc2626 !important; color: #ffffff !important; border-color: #b91c1c !important; box-shadow: 0 4px 10px rgba(220, 38, 38, 0.3); }
+
+        /* Interactive Matching Cards */
+        .match-card {
+            background: #f8fafc;
+            border: 2px solid #cbd5e1;
+            border-radius: 12px;
+            padding: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+        .match-card:hover { border-color: #4f46e5; background: #eef2ff; }
+        .match-card.selected-left { border-color: #0284c7; background: #e0f2fe; box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.3); }
+        .match-card.matched { border-color: #16a34a; background: #f0fdf4; }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .recording { animation: pulse 1.5s infinite; background-color: #dc2626 !important; color: #fff !important; }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <!-- Header Card -->
+    <div class="light-card text-center" style="background: linear-gradient(135deg, #ffffff 0%, #eef2ff 100%); border-top: 5px solid #4f46e5;">
+        <span class="inline-block bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-2">Trường THCS Thành Đông</span>
+        <h1 class="text-3xl font-extrabold text-indigo-950 mb-1">ĐẤU TRƯỜNG TIN HỌC 9</h1>
+        <p class="text-slate-600 font-medium text-sm mb-6">Hệ thống Trò chơi Ôn tập Kiểm tra Giữa Học kỳ I (Năm học 2026 - 2027)</p>
+        
+        <!-- Dashboard Stats -->
+        <div class="grid grid-cols-3 gap-4 max-w-lg mx-auto bg-white p-4 rounded-xl border border-indigo-100 shadow-sm">
+            <div>
+                <div class="text-xs text-slate-500 font-bold uppercase">Điểm số</div>
+                <div id="stat-score" class="text-2xl font-extrabold text-indigo-600">0</div>
+            </div>
+            <div class="border-x border-slate-200">
+                <div class="text-xs text-slate-500 font-bold uppercase">Tiến độ</div>
+                <div id="stat-progress" class="text-2xl font-extrabold text-emerald-600">0%</div>
+            </div>
+            <div>
+                <div class="text-xs text-slate-500 font-bold uppercase">Đã làm</div>
+                <div id="stat-completed" class="text-2xl font-extrabold text-amber-600">0/52</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="flex flex-wrap justify-center mb-6">
+        <button id="tab-mcq" class="nav-btn active" onclick="switchTab('mcq')">📌 I. Trắc Nghiệm Chọn Đáp Án (24)</button>
+        <button id="tab-tf" class="nav-btn" onclick="switchTab('tf')">⚖️ II. Trắc Nghiệm Đúng / Sai (6)</button>
+        <button id="tab-essay" class="nav-btn" onclick="switchTab('essay')">🎙️ III. Tự Luận & Ghi Âm (4)</button>
+        <button id="tab-summary" class="nav-btn" onclick="switchTab('summary')">📊 Tổng Kết & Đánh Giá</button>
+    </div>
+
+    <!-- Section I: MCQ -->
+    <div id="sec-mcq">
+        <div class="flex justify-between items-center mb-4 px-2">
+            <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+                <span class="w-3 h-3 bg-indigo-600 rounded-full inline-block"></span> PHẦN I: TRẮC NGHIỆM NHIỀU LỰA CHỌN
+            </h2>
+            <span class="text-xs bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full font-bold">24 câu hỏi</span>
+        </div>
+        <div id="mcq-container"></div>
+    </div>
+
+    <!-- Section II: True/False -->
+    <div id="sec-tf" style="display: none;">
+        <div class="flex justify-between items-center mb-4 px-2">
+            <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+                <span class="w-3 h-3 bg-pink-500 rounded-full inline-block"></span> PHẦN II: TRẮC NGHIỆM ĐÚNG / SAI
+            </h2>
+            <span class="text-xs bg-pink-100 text-pink-700 px-3 py-1 rounded-full font-bold">6 câu (24 ý)</span>
+        </div>
+        <div id="tf-container"></div>
+    </div>
+
+    <!-- Section III: Essay -->
+    <div id="sec-essay" style="display: none;">
+        <div class="flex justify-between items-center mb-4 px-2">
+            <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+                <span class="w-3 h-3 bg-amber-500 rounded-full inline-block"></span> PHẦN III: TỰ LUẬN & GHÉP NỐI
+            </h2>
+            <span class="text-xs bg-amber-100 text-amber-800 px-3 py-1 rounded-full font-bold">4 câu hỏi</span>
+        </div>
+        <div id="essay-container"></div>
+    </div>
+
+    <!-- Section IV: Summary & Score -->
+    <div id="sec-summary" style="display: none;">
+        <div class="light-card text-center py-8">
+            <div class="text-5xl mb-3">🏆</div>
+            <h2 class="text-2xl font-bold text-slate-800 mb-2">BẢNG TỔNG KẾT BÀI ÔN TẬP</h2>
+            <p class="text-slate-600 mb-6">Kết quả được quy đổi theo thang điểm 10 tiêu chuẩn Giáo Dục</p>
+
+            <div class="inline-block bg-indigo-50 border-2 border-indigo-200 rounded-2xl p-6 mb-6">
+                <div class="text-sm font-bold text-slate-500 uppercase tracking-wide">Điểm Số Quy Đổi Thang Điểm 10</div>
+                <div id="final-scale-score" class="text-5xl font-black text-indigo-600 my-2">0.0 / 10</div>
+                <div id="final-evaluation" class="text-base font-bold text-indigo-900 mt-2"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-xl mx-auto mb-8 text-left">
+                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                    <div class="text-xs text-slate-500 font-bold">Trắc nghiệm Chọn đáp án</div>
+                    <div id="summary-mcq" class="text-lg font-bold text-indigo-600">0/24</div>
+                </div>
+                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                    <div class="text-xs text-slate-500 font-bold">Trắc nghiệm Đúng/Sai</div>
+                    <div id="summary-tf" class="text-lg font-bold text-pink-600">0/24</div>
+                </div>
+                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                    <div class="text-xs text-slate-500 font-bold">Tự luận & Ghép nối</div>
+                    <div id="summary-essay" class="text-lg font-bold text-amber-600">0/4</div>
+                </div>
+            </div>
+
+            <div class="flex justify-center gap-4">
+                <button onclick="resetGame()" class="px-6 py-3 bg-slate-200 text-slate-700 font-bold rounded-xl hover:bg-slate-300 transition">
+                    🔄 Làm lại bài từ đầu
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Submit Button Floating Footer -->
+    <div class="text-center my-8">
+        <button onclick="finishGame()" class="px-8 py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-lg rounded-2xl shadow-lg hover:shadow-xl transition transform hover:-translate-y-1">
+            🏁 NỘP BÀI VÀ XEM ĐIỂM SỐ
+        </button>
+    </div>
+</div>
+
+<script>
+let userMcq = {}; 
+let userTf = {};  
+let userEssay = {}; 
+
+const mcqData = [
+    { id: 1, question: "Câu 1: Thiết bị bay không người lái để gieo hạt giống, phun thuốc trừ sâu,… là thiết bị có gắn bộ xử lí được sử dụng trong lĩnh vực nào?", options: ["A. Giao thông.", "B. Sinh học.", "C. Nông nghiệp.", "D. Công nghiệp."], correct: 2, explain: "Đáp án C: Thiết bị bay không người lái gieo hạt, phun thuốc trừ sâu phục vụ trực tiếp cho hoạt động Nông nghiệp." },
+    { id: 2, question: "Câu 2: Trong y tế, máy tính giúp chẩn đoán hình ảnh như thế nào?", options: ["A. Dựa trên hình ảnh siêu âm, bác sĩ có thể đo được tương đối chính xác kích thước các tạng đặc trong ổ bụng (gan, lách, thận, tuỵ,…) và phát hiện các khối bất thường nếu có.", "B. Dựa trên hình ảnh chụp cộng hưởng từ hạt nhân, bác sĩ xác định được một số bệnh lí ở sọ não.", "C. Dựa trên hình ảnh chụp cắt lớp, bác sĩ xác định chính xác hơn các hình thái và các khối bất thường trong cơ thể.", "D. Dựa trên hình ảnh X-quang, bác sĩ có thể xác định cấu trúc, kích thước các buồng tim, van tim và các mạch máu lớn."], correct: 2, explain: "Đáp án C: Dựa trên hình ảnh chụp cắt lớp, bác sĩ xác định chính xác hơn các hình thái và các khối bất thường trong cơ thể." },
+    { id: 3, question: "Câu 3: Phương án nào sau đây là ví dụ về thiết bị có gắn bộ xử lí trong thương mại?", options: ["A. Máy chiếu trong lớp học.", "B. Máy chụp X-quang.", "C. Hệ thống thanh toán trong siêu thị.", "D. Hệ thống phun tưới vận hành tự động."], correct: 2, explain: "Đáp án C: Hệ thống thanh toán trong siêu thị (POS, quét mã vạch) ứng dụng bộ xử lí trong Thương mại." },
+    { id: 4, question: "Câu 4: Robot lắp ráp là thiết bị có gắn bộ xử lí được sử dụng trong lĩnh vực nào?", options: ["A. Công nghiệp.", "B. Giao thông.", "C. Xây dựng.", "D. Giải trí."], correct: 0, explain: "Đáp án A: Robot lắp ráp tự động trong nhà máy thuộc lĩnh vực Công nghiệp." },
+    { id: 5, question: "Câu 5: Phương án nào sau đây là ứng dụng của máy tính trong lĩnh vực y tế?", options: ["A. Mô phỏng dòng chảy của chất lỏng.", "B. Chẩn đoán bệnh.", "C. Điều khiển ô tô tự động lái.", "D. Dự báo thời tiết."], correct: 1, explain: "Đáp án B: Chẩn đoán bệnh là ứng dụng quan trọng của máy tính trong Y tế." },
+    { id: 6, question: "Câu 6: Phương án nào sau đây KHÔNG phải là ứng dụng của máy tính trong giải trí?", options: ["A. Nghe nhạc.", "B. Xem phim.", "C. Đọc truyện.", "D. Nấu ăn."], correct: 3, explain: "Đáp án D: Nấu ăn là hoạt động thực tế chế biến thực phẩm, máy tính không tự nấu ăn." },
+    { id: 7, question: "Câu 7: Máy tính KHÔNG có khả năng nào sau đây?", options: ["A. Kết nối toàn cầu với tốc độ cao.", "B. Lưu trữ dữ liệu với dung lượng lớn.", "C. Cảm thụ văn học.", "D. Tính toán nhanh."], correct: 2, explain: "Đáp án C: Máy tính chưa có khả năng cảm thụ văn học, cảm xúc hay tư duy sáng tạo nghệ thuật." },
+    { id: 8, question: "Câu 8: Kính viễn vọng không gian Hubble là ứng dụng của máy tính trong nghiên cứu", options: ["A. vật lí.", "B. vũ trụ.", "C. giao thông.", "D. hoá học."], correct: 1, explain: "Đáp án B: Hubble thu thập và xử lý dữ liệu hình ảnh ngoài không gian để phục vụ nghiên cứu vũ trụ." },
+    { id: 9, question: "Câu 9: Phát biểu nào sau đây sai?", options: ["A. Internet là một kho thông tin khổng lồ.", "B. Cần phải quan tâm đến chất lượng thông tin khi tìm kiếm, tiếp nhận, trao đổi và sử dụng thông tin để có thể đưa ra các quyết định đúng đắn.", "C. Số lượng bản tin làm cho thông tin trở thành hữu ích.", "D. Em có thể tìm thấy nhiều thông tin trên Internet nhưng không phải thông tin nào cũng có thể sử dụng để giải quyết vấn đề."], correct: 2, explain: "Đáp án C sai: Số lượng bản tin không quyết định tính hữu ích, mà chất lượng và tính phù hợp mới quyết định." },
+    { id: 10, question: "Câu 10: Tính chính xác của thông tin thể hiện điều gì?", options: ["A. Thể hiện thông tin đã bị lỗi thời chưa.", "B. Thể hiện tính phù hợp của thông tin với vấn đề hay câu hỏi được đặt ra.", "C. Thể hiện sự bao quát nhiều khía cạnh, cho em có được cái nhìn tổng thể về vấn đề được đặt ra.", "D. Thể hiện tính đúng đắn của thông tin."], correct: 3, explain: "Đáp án D: Tính chính xác thể hiện tính đúng đắn, không sai lệch của thông tin." },
+    { id: 11, question: "Câu 11: Phát biểu nào sau đây sai?", options: ["A. Thông tin là cơ sở để ra quyết định.", "B. Chất lượng thông tin trên Internet thể hiện ở số lượng người đọc.", "C. Không phải thông tin nào trên Internet cũng hữu ích đối với việc giải quyết vấn đề.", "D. Nếu thông tin không liên quan tới vấn đề được đặt ra thì em sẽ không sử dụng được và thông tin trở nên vô ích."], correct: 1, explain: "Đáp án B sai: Chất lượng thông tin không đo bằng số lượng người đọc." },
+    { id: 12, question: "Câu 12: Nguồn thông tin nào sau đây là đáng tin cậy nhất?", options: ["A. Ý kiến của người thân.", "B. Các loại sách tham khảo phổ biến trên thị trường.", "C. Những chia sẻ cá nhân trên Internet.", "D. Sách giáo khoa do Nhà xuất bản Giáo dục Việt Nam phát hành."], correct: 3, explain: "Đáp án D: Sách giáo khoa do NXB Giáo dục Việt Nam phát hành là nguồn chính thống, đáng tin cậy." },
+    { id: 13, question: "Câu 13: Khi em thấy một quảng cáo trên YouTube, em sẽ ứng xử như thế nào?", options: ["A. Chia sẻ thông tin với người thân, bạn bè vì YouTube là một trang web nổi tiếng.", "B. Báo cáo quảng cáo với YouTube vì nội dung không phù hợp với video.", "C. Tìm hiểu, đánh giá chất lượng thông tin nếu có hứng thú với sản phẩm trong quảng cáo.", "D. Sử dụng sản phẩm vì quảng cáo trên YouTube rất đáng tin cậy."], correct: 2, explain: "Đáp án C: Cần tìm hiểu và đánh giá chất lượng thông tin trước khi tin dùng." },
+    { id: 14, question: "Câu 14: Chất lượng thông tin được đánh giá thông qua mấy tiêu chí?", options: ["A. 1.", "B. 2.", "C. 3.", "D. 4."], correct: 3, explain: "Đáp án D: Đánh giá qua 4 tiêu chí: Tính mới, Tính chính xác, Tính đầy đủ, Tính sử dụng được." },
+    { id: 15, question: "Câu 15: Tiêu chí nào sau đây KHÔNG được dùng để đánh giá chất lượng thông tin?", options: ["A. Tính sử dụng được.", "B. Tính hấp dẫn.", "C. Tính cập nhật.", "D. Tính đầy đủ."], correct: 1, explain: "Đáp án B: 'Tính hấp dẫn' không nằm trong 4 tiêu chí cốt lõi." },
+    { id: 16, question: "Câu 16: Nguồn thông tin đáng tin cậy để tìm hiểu thông tin về kì thi tuyển sinh lớp 10 là", options: ["A. mạng xã hội.", "B. trang web của Bộ Thông tin và Truyền thông.", "C. trang web của Sở Giáo dục và Đào tạo.", "D. thông tin từ bạn bè."], correct: 2, explain: "Đáp án C: Trang web chính thức của Sở Giáo dục và Đào tạo công bố thông tin chính xác nhất." },
+    { id: 17, question: "Câu 17: Khi tìm kiếm thông tin về Cuộc thi Viết thư Quốc tế UPU năm học 2024 – 2025, bạn Minh đã không để ý đến thời hạn nộp bài dự thi nên đã bỏ lỡ cơ hội tham gia. Theo em, sơ suất này vi phạm tiêu chí nào về chất lượng thông tin?", options: ["A. Tính đầy đủ.", "B. Tính chính xác.", "C. Tính mới.", "D. Tính sử dụng được."], correct: 2, explain: "Đáp án C: Bỏ lỡ thời hạn nộp bài vi phạm tiêu chí Tính mới (tính cập nhật thời gian)." },
+    { id: 18, question: "Câu 18: Công nghệ kĩ thuật số có tác động tiêu cực đến quyền riêng tư như thế nào?", options: ["A. Gây mất ngủ.", "B. Ít giao tiếp.", "C. Thông tin cá nhân có thể bị rò rỉ và sử dụng bất hợp pháp.", "D. Gây nghiện Internet."], correct: 2, explain: "Đáp án C: Thông tin cá nhân bị rò rỉ gây ảnh hưởng trực tiếp đến quyền riêng tư." },
+    { id: 19, question: "Câu 19: Công nghệ kĩ thuật số có tác động tiêu cực đến môi trường như thế nào?", options: ["A. Nguy cơ thất nghiệp tăng.", "B. Tổn hại thị lực.", "C. Giúp tiết kiệm thời gian di chuyển.", "D. Tạo ra rác thải điện tử."], correct: 3, explain: "Đáp án D: Thiết bị điện tử cũ hỏng thải ra môi trường tạo ra rác thải điện tử." },
+    { id: 20, question: "Câu 20: Phương án nào sau đây KHÔNG phải là tác động tiêu cực của công nghệ số đến đời sống con người?", options: ["A. Thông tin cá nhân bị rò rỉ và sử dụng bất hợp pháp.", "B. Cung cấp các công cụ giáo dục tiên tiến.", "C. Thiết bị số nhanh chóng trở nên lỗi thời.", "D. Người dân ở các vùng khó khăn ngày càng tụt hậu."], correct: 1, explain: "Đáp án B: Cung cấp công cụ giáo dục tiên tiến là tác động TÍCH CỰC." },
+    { id: 21, question: "Câu 21: Công nghệ kĩ thuật số có tác động tiêu cực đến sức khoẻ thể chất của con người như thế nào?", options: ["A. Gây ra bệnh khô mắt và giảm thị lực.", "B. Những mối quan hệ xã hội bị ảnh hưởng.", "C. Dễ có những cảm xúc tiêu cực.", "D. Cổ vũ lối sống thiếu đạo đức."], correct: 0, explain: "Đáp án A: Nhìn màn hình quá lâu làm suy giảm thị lực và khô mắt (sức khỏe thể chất)." },
+    { id: 22, question: "Câu 22: Công nghệ kĩ thuật số có tác động tiêu cực đến sức khoẻ tinh thần của con người như thế nào?", options: ["A. Gây ra các vấn đề về cột sống.", "B. Suy giảm sự sáng tạo.", "C. Thách thức về an ninh dữ liệu.", "D. Nguy cơ trầm cảm và lo lắng."], correct: 3, explain: "Đáp án D: Nguy cơ trầm cảm và lo lắng ảnh hưởng tới sức khỏe tinh thần." },
+    { id: 23, question: "Câu 23: Phương án nào sau đây là ứng dụng hỗ trợ và phổ biến tệ nạn trên mạng?", options: ["A. Internet Banking.", "B. Mua sắm trực tuyến.", "C. Học online.", "D. Tổ chức đánh bạc trực tuyến."], correct: 3, explain: "Đáp án D: Tổ chức đánh bạc trực tuyến là tệ nạn vi phạm pháp luật." },
+    { id: 24, question: "Câu 24: Hành vi nào sau đây là thiếu văn hoá khi hoạt động trong môi trường số?", options: ["A. Dùng từ ngữ phản cảm khi bình luận trên các diễn đàn, mạng xã hội.", "B. Sử dụng phần mềm không có bản quyền.", "C. Làm lộ thông tin cá nhân, tổ chức gây ảnh hưởng xấu.", "D. Sử dụng dữ liệu của người khác mà không xin phép."], correct: 0, explain: "Đáp án A: Dùng từ ngữ phản cảm khi bình luận là ứng xử thiếu văn hóa." }
+];
+
+const tfData = [
+    {
+        id: 1,
+        title: "Câu 1: Về các thiết bị kĩ thuật số và tác động của CNTT:",
+        items: [
+            { text: "a) Ti vi kĩ thuật số có khả năng tiếp nhận thông tin đầu vào từ điều khiển từ xa, thực hiện xử lý hình ảnh/âm thanh và thay đổi dữ liệu đầu ra.", key: true, explain: "Đúng: TV kĩ thuật số tiếp nhận tín hiệu từ remote, xử lý dữ liệu hình ảnh/âm thanh và xuất ra màn hình/loa." },
+            { text: "b) Ô tô lái tự động, máy chụp cắt lớp, robot lắp ráp đều không cần tích hợp bộ vi xử lý bên trong.", key: false, explain: "Sai: Các thiết bị hiện đại này đều bắt buộc phải tích hợp bộ vi xử lý điều khiển." },
+            { text: "c) Khóa học trực tuyến (E-learning) là minh chứng rõ ràng về tác động tích cực của CNTT đến giáo dục.", key: true, explain: "Đúng: E-learning giúp học tập mọi lúc mọi nơi, thúc đẩy chuyển đổi số giáo dục." },
+            { text: "d) Sự phát triển của xã hội không chịu bất kỳ ảnh hưởng nào từ thế giới kĩ thuật số.", key: false, explain: "Sai: Thế giới kĩ thuật số làm thay đổi toàn diện phương thức làm việc, sinh hoạt và quản lý xã hội." }
+        ]
+    },
+    {
+        id: 2,
+        title: "Câu 2: Về tác động của công nghệ kĩ thuật số đối với đời sống:",
+        items: [
+            { text: "a) Việc chuyển từ bản đồ giấy sang Google Maps minh họa cho sự thay đổi phương thức hoạt động của con người.", key: true, explain: "Đúng: Bản đồ số thay thế bản đồ giấy giúp tìm đường thông minh, tiện lợi hơn." },
+            { text: "b) Trong giáo dục, công nghệ kĩ thuật số chỉ giúp học sinh giải trí chứ không thay đổi phương thức học tập.", key: false, explain: "Sai: Công nghệ số làm thay đổi lớn phương thức học tập, nghiên cứu và quản lý giáo dục." },
+            { text: "c) Thiết bị kĩ thuật số giúp thu hẹp khoảng cách địa lí, kết nối làm việc từ xa dễ dàng.", key: true, explain: "Đúng: Kết nối mạng giúp con người làm việc, họp hành trực tuyến toàn cầu." },
+            { text: "d) Con người nên dành toàn bộ thời gian trong ngày tương tác trên môi trường số mà không lo tác động tiêu cực.", key: false, explain: "Sai: Lạm dụng môi trường số gây hại sức khỏe thể chất và tâm lý." }
+        ]
+    },
+    {
+        id: 3,
+        title: "Câu 3: Đánh giá chất lượng thông tin phục vụ giải quyết vấn đề:",
+        items: [
+            { text: "a) Chất lượng thông tin được đánh giá qua 4 tiêu chí: tính mới, tính chính xác, tính đầy đủ và tính sử dụng được.", key: true, explain: "Đúng: Đây là 4 tiêu chí chuẩn đánh giá chất lượng thông tin." },
+            { text: "b) Tính đầy đủ nghĩa là phải chứa mọi chi tiết từ trước đến nay, kể cả các thông tin thừa.", key: false, explain: "Sai: Tính đầy đủ nghĩa là đáp ứng đủ các khía cạnh cần thiết để giải quyết vấn đề, không phải nhồi nhét thông tin thừa." },
+            { text: "c) Thông tin có tính mới là thông tin được cập nhật kịp thời tại thời điểm sử dụng.", key: true, explain: "Đúng: Thông tin cập nhật đúng thời điểm ra quyết định đảm bảo tính mới." },
+            { text: "d) Tính sử dụng được thể hiện ở việc thông tin đó có ích cho người dùng ra quyết định.", key: true, explain: "Đúng: Thông tin hữu ích và giải quyết được mục tiêu là thông tin sử dụng được." }
+        ]
+    },
+    {
+        id: 4,
+        title: "Câu 4: Bạn Minh thu thập dữ liệu về ô nhiễm môi trường:",
+        items: [
+            { text: "a) Chất lượng thông tin là cơ sở cốt lõi giúp Minh đưa ra quyết định chính xác.", key: true, explain: "Đúng: Quyết định đúng đắn dựa trên nguồn thông tin chất lượng." },
+            { text: "b) Thông tin chất lượng phải đảm bảo cả 4 tính chất: Tính mới, chính xác, đầy đủ và sử dụng được.", key: true, explain: "Đúng: Thiếu bất kỳ tiêu chí nào cũng có thể làm giảm hiệu quả giải quyết vấn đề." },
+            { text: "c) Dùng thông tin lỗi thời từ 15 năm trước vẫn luôn chính xác vì thông tin trên Internet không bao giờ sai.", key: false, explain: "Sai: Thông tin cũ có thể vi phạm tiêu chí tính mới và không còn đúng với thực tế." },
+            { text: "d) Đánh giá chất lượng thông tin là xem xét tính đúng đắn, nguồn gốc trước khi tin dùng.", key: true, explain: "Đúng: Kiểm tra tính đúng đắn và nguồn gốc là bước quan trọng khi dùng dữ liệu Internet." }
+        ]
+    },
+    {
+        id: 5,
+        title: "Câu 5: Các hành vi theo Luật An ninh mạng:",
+        items: [
+            { text: "a) Đăng tải thông tin sai sự thật xúc phạm danh dự người khác là vi phạm pháp luật.", key: true, explain: "Đúng: Hành vi xúc phạm danh dự trên mạng bị Luật An ninh mạng nghiêm cấm." },
+            { text: "b) Được phép chia sẻ bí mật nhà nước lên mạng nếu mục đích chỉ để cảnh báo người thân.", key: false, explain: "Sai: Bí mật nhà nước nghiêm cấm đăng tải dưới mọi hình thức." },
+            { text: "c) Hack tài khoản người khác hoặc phát tán mã độc là vi phạm Luật An ninh mạng.", key: true, explain: "Đúng: Đây là hành vi xâm phạm trái phép hệ thống mạng." },
+            { text: "d) Luật An ninh mạng không áp dụng xử phạt đối với cá nhân hay học sinh vi phạm.", key: false, explain: "Sai: Mọi cá nhân vi phạm Luật An ninh mạng đều chịu xử lý theo quy định." }
+        ]
+    },
+    {
+        id: 6,
+        title: "Câu 6: Sử dụng dịch vụ Internet và mạng xã hội:",
+        items: [
+            { text: "a) Mọi phần mềm trên Internet đều miễn phí, người dùng có quyền tải bản crack về dùng tùy ý.", key: false, explain: "Sai: Tải bản crack vi phạm bản quyền phần mềm và tiềm ẩn nguy cơ nhiễm mã độc." },
+            { text: "b) Chia sẻ bài viết chưa kiểm chứng từ trang không chính thống là vi phạm đạo đức và pháp luật.", key: true, explain: "Đúng: Chia sẻ tin giả chưa kiểm chứng gây tác hại cho xã hội." },
+            { text: "c) Đăng ảnh cá nhân người khác lên mạng để bôi nhọ là vi phạm Luật An ninh mạng.", key: true, explain: "Đúng: Xâm phạm quyền riêng tư và bôi nhọ danh dự cá nhân." },
+            { text: "d) Khi trích dẫn thông tin để học tập cần ghi rõ nguồn gốc và tên tác giả.", key: true, explain: "Đúng: Thể hiện văn hóa mạng và tôn trọng bản quyền tác giả." }
+        ]
+    }
+];
+
+const essayData = [
+    {
+        id: 1,
+        question: "Câu 1: Em hãy trình bày 2 tác động tích cực và 2 tác động tiêu cực của công nghệ kĩ thuật số đối với đời sống con người?",
+        sampleAnswer: "• Tác động tích cực:\n 1. Thu hẹp khoảng cách địa lí, kết nối giao tiếp và họp trực tuyến dễ dàng.\n 2. Cung cấp các công cụ giáo dục và tra cứu tri thức tiên tiến.\n• Tác động tiêu cực:\n 1. Nguy cơ rò rỉ thông tin cá nhân và bị xâm phạm quyền riêng tư.\n 2. Dễ gây bệnh về mắt, suy giảm thị lực và trầm cảm nếu quá lạm dụng."
+    },
+    {
+        id: 2,
+        question: "Câu 2: Bài tập ghép nối - Hãy ghép các câu hỏi kiểm tra ở cột bên trái tương ứng với tiêu chí đánh giá chất lượng thông tin ở cột bên phải?",
+        sampleAnswer: "1 - c) Tính mới\n2 - b) Tính sử dụng được\n3 - d) Tính chính xác\n4 - a) Tính đầy đủ"
+    },
+    {
+        id: 3,
+        question: "Câu 3: Tại sao khi tìm kiếm thông tin trên Internet để giải quyết một bài tập, em lại không nên tin tưởng tuyệt đối vào kết quả tìm kiếm đầu tiên?",
+        sampleAnswer: "Vì thông tin trên Internet rất đa dạng, chưa được kiểm duyệt hoàn toàn. Kết quả đầu tiên có thể do quảng cáo, giật gân hoặc chứa thông tin sai lệch, chưa cập nhật. Cần đối chiếu với các trang web chính thống (như web của Bộ, Sở Giáo dục, NXB Giáo dục) để đảm bảo tính chính xác và đầy đủ."
+    },
+    {
+        id: 4,
+        question: "Câu 4: Nêu ví dụ về một hành vi thiếu văn hóa hoặc vi phạm pháp luật trong môi trường số mà em biết và đề xuất cách ứng xử đúng đắn.",
+        sampleAnswer: "• Ví dụ: Đăng tải tin đồn thất thiệt hoặc dùng từ ngữ xúc phạm người khác trên mạng xã hội.\n• Cách ứng xử đúng: Không chia sẻ tin chưa kiểm chứng, báo cáo (report) nội dung xấu độc, sử dụng ngôn từ lịch sự, tôn trọng người khác khi bình luận."
+    }
+];
+
+const matchLeftOptions = [
+    { id: 1, text: "1) Liệu thông tin có lỗi thời với vấn đề cần giải quyết hay không?" },
+    { id: 2, text: "2) Thông tin có phù hợp với yêu cầu không? Nó có quá sơ sài hay quá phức tạp không?" },
+    { id: 3, text: "3) Thông tin có thống nhất với những gì chúng ta đã biết không? Có xảy ra mâu thuẫn nào không?" },
+    { id: 4, text: "4) Các câu hỏi sau đã được trả lời hết chưa? 'Đó là vấn đề gì? Xảy ra ở đâu? Khi nào?...'" }
+];
+
+const matchRightOptions = [
+    { id: 'a', text: "a) Tính đầy đủ", targetId: 4 },
+    { id: 'b', text: "b) Tính sử dụng được", targetId: 2 },
+    { id: 'c', text: "c) Tính mới", targetId: 1 },
+    { id: 'd', text: "d) Tính chính xác", targetId: 3 }
+];
+
+let selectedMatchLeft = null;
+let userMatchPairs = {};
+
+window.onload = function() {
+    renderMCQ();
+    renderTF();
+    renderEssay();
+    updateStats();
+};
+
+function switchTab(tab) {
+    ['mcq', 'tf', 'essay', 'summary'].forEach(t => {
+        document.getElementById(`sec-${t}`).style.display = (t === tab) ? 'block' : 'none';
+        document.getElementById(`tab-${t}`).classList.toggle('active', t === tab);
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function renderMCQ() {
+    const container = document.getElementById('mcq-container');
+    container.innerHTML = mcqData.map(q => `
+        <div class="light-card" id="mcq-card-${q.id}">
+            <p style="font-size: 16px; font-weight: 700; color: #0f172a; margin-bottom: 14px; line-height: 1.5;">${q.question}</p>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                ${q.options.map((opt, idx) => `
+                    <button id="opt-${q.id}-${idx}" onclick="selectMCQ(${q.id}, ${idx})" class="opt-btn">
+                        <span>${opt}</span>
+                        <span id="opt-icon-${q.id}-${idx}"></span>
+                    </button>
+                `).join('')}
+            </div>
+            <div id="explain-${q.id}" style="display: none; margin-top: 14px; padding: 14px; background: #eff6ff; border: 1px solid #93c5fd; border-radius: 10px; color: #1e40af; font-size: 14px;">
+                💡 <strong>Giải thích:</strong> ${q.explain}
+            </div>
+        </div>
+    `).join('');
+}
+
+function selectMCQ(qId, selectedIdx) {
+    if (userMcq[qId] !== undefined) return;
+    userMcq[qId] = selectedIdx;
+
+    const q = mcqData.find(item => item.id === qId);
+    const isCorrect = selectedIdx === q.correct;
+
+    q.options.forEach((_, idx) => {
+        const btn = document.getElementById(`opt-${qId}-${idx}`);
+        btn.disabled = true;
+        if (idx === q.correct) {
+            btn.classList.add('correct');
+            document.getElementById(`opt-icon-${qId}-${idx}`).innerText = '✅';
+        } else if (idx === selectedIdx && !isCorrect) {
+            btn.classList.add('wrong');
+            document.getElementById(`opt-icon-${qId}-${idx}`).innerText = '❌';
+        }
+    });
+
+    document.getElementById(`explain-${qId}`).style.display = 'block';
+    updateStats();
+    if (isCorrect && typeof confetti === 'function') confetti({ particleCount: 30, spread: 60, origin: { y: 0.8 } });
+}
+
+function renderTF() {
+    const container = document.getElementById('tf-container');
+    container.innerHTML = tfData.map(group => `
+        <div class="light-card">
+            <h3 style="font-size: 17px; font-weight: 800; color: #be185d; margin-bottom: 16px;">${group.title}</h3>
+            <div style="display: flex; flex-direction: column; gap: 14px;">
+                ${group.items.map((sub, subIdx) => {
+                    const key = `${group.id}_${subIdx}`;
+                    return `
+                        <div style="background: #f8fafc; padding: 14px; border-radius: 12px; border: 1px solid #e2e8f0;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;">
+                                <span style="font-size: 15px; font-weight: 600; color: #1e293b; flex: 1;">${sub.text}</span>
+                                <div style="display: flex; gap: 10px;">
+                                    <button id="tf-btn-${key}-true" onclick="selectTF(${group.id}, ${subIdx}, true)" class="tf-btn">ĐÚNG</button>
+                                    <button id="tf-btn-${key}-false" onclick="selectTF(${group.id}, ${subIdx}, false)" class="tf-btn">SAI</button>
+                                </div>
+                            </div>
+                            <div id="tf-feedback-${key}" style="display: none; margin-top: 12px; padding: 12px; border-radius: 10px; font-size: 14px;"></div>
+                        </div>
+                    `;
+                }).join('')}
+            </div>
+        </div>
+    `).join('');
+}
+
+function selectTF(groupId, subIdx, val) {
+    const key = `${groupId}_${subIdx}`;
+    if (userTf[key] !== undefined) return;
+    userTf[key] = val;
+
+    const group = tfData.find(g => g.id === groupId);
+    const item = group.items[subIdx];
+    const isCorrect = (val === item.key);
+
+    const btnTrue = document.getElementById(`tf-btn-${key}-true`);
+    const btnFalse = document.getElementById(`tf-btn-${key}-false`);
+    const feedback = document.getElementById(`tf-feedback-${key}`);
+
+    btnTrue.disabled = true;
+    btnFalse.disabled = true;
+
+    if (val === true) {
+        btnTrue.classList.add(isCorrect ? 'correct-choice' : 'wrong-choice');
+    } else {
+        btnFalse.classList.add(isCorrect ? 'correct-choice' : 'wrong-choice');
+    }
+
+    if (!isCorrect) {
+        if (item.key === true) btnTrue.classList.add('correct-choice');
+        else btnFalse.classList.add('correct-choice');
+    }
+
+    feedback.style.display = 'block';
+    if (isCorrect) {
+        feedback.style.background = '#dcfce7';
+        feedback.style.border = '1px solid #86efac';
+        feedback.style.color = '#14532d';
+        feedback.innerHTML = `<strong>✅ Chính xác!</strong> Đáp án đúng là <strong>${item.key ? 'ĐÚNG' : 'SAI'}</strong>.<br>💡 ${item.explain}`;
+    } else {
+        feedback.style.background = '#ffe4e6';
+        feedback.style.border = '1px solid #fca5a5';
+        feedback.style.color = '#881337';
+        feedback.innerHTML = `<strong>❌ Chưa chính xác!</strong> Đáp án đúng phải là <strong>${item.key ? 'ĐÚNG' : 'SAI'}</strong>.<br>💡 ${item.explain}`;
+    }
+
+    updateStats();
+}
+
+function renderEssay() {
+    const container = document.getElementById('essay-container');
+    container.innerHTML = essayData.map(item => {
+        if (item.id === 2) {
+            return `
+                <div class="light-card">
+                    <h3 style="font-size: 17px; font-weight: 800; color: #b45309; margin-bottom: 8px;">${item.question}</h3>
+                    <p style="font-size: 14px; color: #64748b; margin-bottom: 16px;">👉 <em>Thao tác ghép nối: Bấm chọn 1 vế ở cột Trái, sau đó bấm vào Tiêu chí tương ứng ở cột Phải!</em></p>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-bottom: 16px;">
+                        <div style="display: flex; flex-direction: column; gap: 10px;">
+                            <div style="font-weight: 800; font-size: 14px; color: #0284c7;">CÂU HỎI KIỂM TRA:</div>
+                            ${matchLeftOptions.map(l => `
+                                <div id="match-left-${l.id}" onclick="clickMatchLeft(${l.id})" class="match-card">
+                                    ${l.text}
+                                    <div id="match-tag-${l.id}" style="margin-top: 6px; font-weight: 800; font-size: 13px; color: #d97706;"></div>
+                                </div>
+                            `).join('')}
+                        </div>
+
+                        <div style="display: flex; flex-direction: column; gap: 10px;">
+                            <div style="font-weight: 800; font-size: 14px; color: #be185d;">TIÊU CHÍ ĐÁNH GIÁ:</div>
+                            ${matchRightOptions.map(r => `
+                                <div id="match-right-${r.id}" onclick="clickMatchRight('${r.id}')" class="match-card">
+                                    ${r.text}
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 12px; align-items: center;">
+                        <button onclick="checkMatchingResult()" style="padding: 10px 20px; background: #4f46e5; color: white; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 14px;">
+                            ✔️ Kiểm tra ghép nối
+                        </button>
+                        <button onclick="resetMatching()" style="padding: 10px 20px; background: #e2e8f0; color: #334155; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 14px;">
+                            🔄 Ghép lại
+                        </button>
+                    </div>
+
+                    <div id="matching-feedback" style="display: none; margin-top: 14px; padding: 14px; border-radius: 10px; font-size: 14px;"></div>
+                </div>
+            `;
+        }
+
+        return `
+            <div class="light-card">
+                <h3 style="font-size: 17px; font-weight: 800; color: #b45309; margin-bottom: 12px;">${item.question}</h3>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <span style="font-size: 13px; font-weight: 700; color: #64748b;">✍️ Nhập văn bản hoặc bấm micro ghi âm:</span>
+                    <button id="rec-btn-${item.id}" onclick="toggleRecord(${item.id})" style="padding: 8px 14px; background: #fef3c7; border: 1px solid #f59e0b; color: #b45309; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer;">
+                        🎙️ <span id="rec-txt-${item.id}">Ghi âm trả lời</span>
+                    </button>
+                </div>
+
+                <textarea id="essay-input-${item.id}" oninput="onEssayChange(${item.id})" rows="4" placeholder="Nhập câu trả lời của em vào đây..." style="width: 100%; background: #f8fafc; border: 2px solid #cbd5e1; border-radius: 12px; padding: 14px; color: #0f172a; font-size: 15px; outline: none;"></textarea>
+
+                <div style="margin-top: 10px; text-align: right;">
+                    <button onclick="toggleSample(${item.id})" style="background: none; border: none; color: #4338ca; font-size: 13px; font-weight: 700; cursor: pointer;">
+                        👁️ Xem gợi ý đáp án chuẩn
+                    </button>
+                </div>
+
+                <div id="sample-${item.id}" style="display: none; margin-top: 12px; padding: 14px; background: #eef2ff; border: 1px solid #c7d2fe; border-radius: 12px; font-size: 14px; color: #3730a3; white-space: pre-line;">
+                    <strong style="color: #b45309; display: block; margin-bottom: 6px;">Dàn ý / Đáp án gợi ý:</strong>
+                    ${item.sampleAnswer}
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function clickMatchLeft(leftId) {
+    if (Object.values(userMatchPairs).includes(leftId)) return;
+    selectedMatchLeft = leftId;
+
+    matchLeftOptions.forEach(l => {
+        const el = document.getElementById(`match-left-${l.id}`);
+        if (l.id === leftId) el.classList.add('selected-left');
+        else el.classList.remove('selected-left');
+    });
+}
+
+function clickMatchRight(rightId) {
+    if (!selectedMatchLeft) {
+        alert("Em hãy chọn 1 câu hỏi ở cột bên Trái trước nhé!");
+        return;
+    }
+
+    userMatchPairs[selectedMatchLeft] = rightId;
+
+    const rObj = matchRightOptions.find(r => r.id === rightId);
+    document.getElementById(`match-tag-${selectedMatchLeft}`).innerText = `➔ Ghép với: ${rObj.text}`;
+    document.getElementById(`match-left-${selectedMatchLeft}`).classList.remove('selected-left');
+
+    selectedMatchLeft = null;
+    userEssay[2] = JSON.stringify(userMatchPairs);
+    updateStats();
+}
+
+function checkMatchingResult() {
+    let correctCount = 0;
+    matchRightOptions.forEach(r => {
+        if (userMatchPairs[r.targetId] === r.id) {
+            correctCount++;
+        }
+    });
+
+    const feedback = document.getElementById('matching-feedback');
+    feedback.style.display = 'block';
+
+    if (correctCount === 4) {
+        feedback.style.background = '#dcfce7';
+        feedback.style.border = '1px solid #86efac';
+        feedback.style.color = '#14532d';
+        feedback.innerHTML = `<strong>🎉 Xuất sắc! Em đã ghép đúng 4/4 câu:</strong><br>1-c (Tính mới); 2-b (Tính sử dụng được); 3-d (Tính chính xác); 4-a (Tính đầy đủ)`;
+    } else {
+        feedback.style.background = '#ffe4e6';
+        feedback.style.border = '1px solid #fca5a5';
+        feedback.style.color = '#881337';
+        feedback.innerHTML = `<strong>Chưa chính xác (Đúng ${correctCount}/4 cặp):</strong><br>Đáp án đúng là: <strong>1-c; 2-b; 3-d; 4-a</strong>. Em bấm "Ghép lại" để thử lại nhé!`;
+    }
+}
+
+function resetMatching() {
+    userMatchPairs = {};
+    selectedMatchLeft = null;
+    delete userEssay[2];
+    matchLeftOptions.forEach(l => {
+        document.getElementById(`match-tag-${l.id}`).innerText = '';
+        document.getElementById(`match-left-${l.id}`).className = 'match-card';
+    });
+    document.getElementById('matching-feedback').style.display = 'none';
+    updateStats();
+}
+
+let recognition = null;
+let activeRecId = null;
+
+function toggleRecord(id) {
+    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+        alert("Trình duyệt không hỗ trợ nhận diện giọng nói. Hãy dùng Google Chrome trên điện thoại hoặc máy tính!");
+        return;
+    }
+
+    const recBtn = document.getElementById(`rec-btn-${id}`);
+    const recTxt = document.getElementById(`rec-txt-${id}`);
+
+    if (activeRecId === id) {
+        recognition.stop();
+        activeRecId = null;
+        recBtn.classList.remove('recording');
+        recTxt.innerText = "Ghi âm trả lời";
+        return;
+    }
+
+    if (recognition) recognition.stop();
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    recognition = new SpeechRecognition();
+    recognition.lang = 'vi-VN';
+    recognition.continuous = true;
+    recognition.interimResults = true;
+
+    recognition.onstart = function() {
+        activeRecId = id;
+        recBtn.classList.add('recording');
+        recTxt.innerText = "Đang ghi âm... (Bấm để dừng)";
+    };
+
+    recognition.onresult = function(event) {
+        let transcript = '';
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+            transcript += event.results[i][0].transcript;
+        }
+        const textarea = document.getElementById(`essay-input-${id}`);
+        textarea.value = transcript;
+        onEssayChange(id);
+    };
+
+    recognition.onerror = function() {
+        activeRecId = null;
+        recBtn.classList.remove('recording');
+        recTxt.innerText = "Ghi âm trả lời";
+    };
+
+    recognition.onend = function() {
+        activeRecId = null;
+        recBtn.classList.remove('recording');
+        recTxt.innerText = "Ghi âm trả lời";
+    };
+
+    recognition.start();
+}
+
+function onEssayChange(id) {
+    const val = document.getElementById(`essay-input-${id}`).value.trim();
+    if (val) userEssay[id] = val;
+    else delete userEssay[id];
+    updateStats();
+}
+
+function toggleSample(id) {
+    const el = document.getElementById(`sample-${id}`);
+    el.style.display = (el.style.display === 'none') ? 'block' : 'none';
+}
+
+function updateStats() {
+    let mcqCorrect = 0;
+    Object.keys(userMcq).forEach(qId => {
+        const q = mcqData.find(item => item.id == qId);
+        if (userMcq[qId] === q.correct) mcqCorrect++;
+    });
+
+    let tfCorrect = 0;
+    Object.keys(userTf).forEach(key => {
+        const [gId, sIdx] = key.split('_').map(Number);
+        const group = tfData.find(g => g.id === gId);
+        if (userTf[key] === group.items[sIdx].key) tfCorrect++;
+    });
+
+    const mcqDone = Object.keys(userMcq).length;
+    const tfDone = Object.keys(userTf).length;
+    const essayDone = Object.keys(userEssay).length;
+
+    const totalDone = mcqDone + tfDone + essayDone;
+    const totalQuestions = 24 + 24 + 4; 
+
+    document.getElementById('stat-completed').innerText = `${totalDone}/${totalQuestions}`;
+    const pct = Math.round((totalDone / totalQuestions) * 100);
+    document.getElementById('stat-progress').innerText = `${pct}%`;
+
+    const totalScore = mcqCorrect + tfCorrect + (essayDone * 2); 
+    document.getElementById('stat-score').innerText = totalScore;
+
+    document.getElementById('summary-mcq').innerText = `${mcqCorrect}/24`;
+    document.getElementById('summary-tf').innerText = `${tfCorrect}/24`;
+    document.getElementById('summary-essay').innerText = `${essayDone}/4`;
+}
+
+function finishGame() {
+    let mcqCorrect = 0;
+    Object.keys(userMcq).forEach(qId => {
+        const q = mcqData.find(item => item.id == qId);
+        if (userMcq[qId] === q.correct) mcqCorrect++;
+    });
+
+    let tfCorrect = 0;
+    Object.keys(userTf).forEach(key => {
+        const [gId, sIdx] = key.split('_').map(Number);
+        const group = tfData.find(g => g.id === gId);
+        if (userTf[key] === group.items[sIdx].key) tfCorrect++;
+    });
+
+    const essayDone = Object.keys(userEssay).length;
+
+    const finalScore = (mcqCorrect * 0.166) + (tfCorrect * 0.166) + (essayDone * 0.5);
+    const scaledScore = Math.min(10, Math.round(finalScore * 10) / 10).toFixed(1);
+
+    document.getElementById('final-scale-score').innerText = `${scaledScore} / 10`;
+
+    let evalTxt = "";
+    if (scaledScore >= 9.0) evalTxt = "🌟 Xuất sắc! Em đã nắm rất vững toàn bộ kiến thức Tin học 9 Giữa Kì 1!";
+    else if (scaledScore >= 7.0) evalTxt = "🎉 Khá tốt! Em làm bài rất ổn, hãy xem lại các câu chưa chính xác để đạt điểm tối đa nhé!";
+    else if (scaledScore >= 5.0) evalTxt = "👍 Đạt yêu cầu. Em nên ôn lại kĩ hơn phần Tiêu chí đánh giá chất lượng thông tin.";
+    else evalTxt = "💪 Cố gắng lên! Hãy xem kĩ phần đáp án gợi ý và lời giải để ôn tập lại nhé!";
+
+    document.getElementById('final-evaluation').innerText = evalTxt;
+    switchTab('summary');
+
+    if (typeof confetti === 'function') confetti({ particleCount: 100, spread: 80, origin: { y: 0.6 } });
+}
+
+function resetGame() {
+    userMcq = {};
+    userTf = {};
+    userEssay = {};
+    selectedMatchLeft = null;
+    userMatchPairs = {};
+    renderMCQ();
+    renderTF();
+    renderEssay();
+    updateStats();
+    switchTab('mcq');
+}
+</script>
+</body>
+</html>
